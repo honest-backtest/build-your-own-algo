@@ -62,8 +62,9 @@ def base_effect(profit_by_year: pd.Series, short: int = 5, long: int = 7) -> flo
     p = profit_by_year.sort_index()
     if len(p) <= long:
         return None
-    s, l = cagr(p.iloc[-1 - short], p.iloc[-1], short), cagr(p.iloc[-1 - long], p.iloc[-1], long)
-    return None if s is None or l is None else s - l
+    g_short = cagr(p.iloc[-1 - short], p.iloc[-1], short)
+    g_long = cagr(p.iloc[-1 - long], p.iloc[-1], long)
+    return None if g_short is None or g_long is None else g_short - g_long
 
 
 def pct_rank(s: pd.Series, invert: bool = False) -> pd.Series:

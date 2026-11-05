@@ -28,11 +28,11 @@ from algo_builder.strategies.option_selling_adx_switch import P, Leg, ShortPosit
 TRUE_VOL, MODEL_MULT, YEAR_MIN = 0.13, 1.2, 252 * 375
 
 
-def adx(h: pd.Series, l: pd.Series, c: pd.Series, n: int = 14) -> float:
-    up, dn = h.diff(), -l.diff()
+def adx(h: pd.Series, lo: pd.Series, c: pd.Series, n: int = 14) -> float:
+    up, dn = h.diff(), -lo.diff()
     plus = np.where((up > dn) & (up > 0), up, 0.0)
     minus = np.where((dn > up) & (dn > 0), dn, 0.0)
-    tr = np.maximum(h - l, np.maximum((h - c.shift()).abs(), (l - c.shift()).abs()))
+    tr = np.maximum(h - lo, np.maximum((h - c.shift()).abs(), (lo - c.shift()).abs()))
     a = pd.Series(tr).ewm(alpha=1 / n, adjust=False).mean().to_numpy()
     pdi = 100 * pd.Series(plus).ewm(alpha=1 / n, adjust=False).mean().to_numpy() / a
     mdi = 100 * pd.Series(minus).ewm(alpha=1 / n, adjust=False).mean().to_numpy() / a

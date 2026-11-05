@@ -5,9 +5,9 @@ from algo_builder.strategies.hourly_signal_to_options import shadow_row, stop_fi
 from algo_builder.strategies.rsi_macd_dipbuy import daily_scan, dead_filters
 
 
-def _bars(o, h, l, c):
+def _bars(o, h, lo, c):
     idx = pd.date_range("2026-01-05 09:15", periods=len(c), freq="h")
-    return pd.DataFrame({"open": o, "high": h, "low": l, "close": c}, index=idx)
+    return pd.DataFrame({"open": o, "high": h, "low": lo, "close": c}, index=idx)
 
 
 def test_stop_fills_differ_by_clock():

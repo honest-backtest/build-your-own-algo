@@ -17,7 +17,7 @@ def _bars(prices, start="2026-01-05 09:15"):
 
 def test_extension_reports_facts():
     ib = InitialBalance(time(10, 15), high=110.0, low=100.0, closed=True)
-    assert [extension(ib, h, l) for h, l in [(105, 101), (111, 101), (105, 99), (111, 99)]] == \
+    assert [extension(ib, h, lo) for h, lo in [(105, 101), (111, 101), (105, 99), (111, 99)]] == \
            ["none", "up", "down", "both"]
 
 

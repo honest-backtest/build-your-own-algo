@@ -70,7 +70,7 @@ def part2() -> None:
                             "adx": rng.uniform(5, 50, 300)}, index=days)
 
     def run_backtest(f: pd.DataFrame, p: dict) -> list:
-        log = {"adx_min": p["adx_min"]}                         # configured, and logged...
+        log = {"adx_min": p["adx_min"]}  # noqa: F841  configured, and logged...
         entries = f[(f.rsi <= p["rsi_oversold"]) & (f.above_sma | (not p["require_sma"]))]
         return [str(d.date()) for d in entries.index]           # ...but never used to decide
 
