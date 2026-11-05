@@ -53,8 +53,11 @@ def test_closed_session_served_from_disk(monkeypatch):
 
 
 def test_session_closed_rule():
-    assert not cc.session_closed(date(2026, 10, 5), now=datetime(2026, 10, 5, 15, 29))
-    assert cc.session_closed(date(2026, 10, 5), now=datetime(2026, 10, 5, 15, 30))
+    # not final until the closing auction (15:30-15:40) and its publication are over
+    assert not cc.session_closed(date(2026, 10, 5), now=datetime(2026, 10, 5, 15, 35))
+    assert not cc.session_closed(date(2026, 10, 5), now=datetime(2026, 10, 5, 15, 59))
+    assert cc.session_closed(date(2026, 10, 5), now=datetime(2026, 10, 5, 16, 0))
+    assert cc.session_closed(date(2026, 10, 4), now=datetime(2026, 10, 5, 9, 15))
 
 
 class TruncatingBroker(PaperBroker):

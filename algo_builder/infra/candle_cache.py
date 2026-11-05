@@ -32,7 +32,10 @@ from algo_builder.common.broker_adapter import BrokerAdapter
 
 log = logging.getLogger("candle_cache")
 
-MARKET_CLOSE = dtime(15, 30)
+# A day's candles are final only after the exchange has published its closing prices.
+# From 7 Dec 2026 the cash market closes with an auction from 15:30 to 15:40, so the
+# cache waits until 16:00 before treating today as closed (Appendix E).
+MARKET_CLOSE = dtime(16, 0)
 CACHE_DIR = os.environ.get("ALGO_CACHE_DIR", "./cache")
 
 
