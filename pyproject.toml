@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "build-your-own-algo"
+version = "0.1.0"
+description = "Companion code for Build Your Own Algo Trading System (The Honest Backtest, Book 2). Educational; not a trading system."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Harish Kumar Krishnappa" }]
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.2,<3",
+    "numpy>=1.26,<2.5",   # numpy 2.5 + pandas 2.3 raises timedelta deprecations; recheck later
+    "requests>=2.31,<3",
+]
+
+[project.urls]
+Repository = "https://github.com/honest-backtest/build-your-own-algo"
+Issues = "https://github.com/honest-backtest/build-your-own-algo/issues"
+
+[project.optional-dependencies]
+parquet = ["pyarrow>=14"]
+dev = ["pyarrow>=14", "pytest>=8", "ruff>=0.5", "pre-commit>=3"]
+
+[tool.setuptools.packages.find]
+include = ["algo_builder*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501", "E701", "E702", "E731"]

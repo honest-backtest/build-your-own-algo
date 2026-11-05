@@ -1,0 +1,19 @@
+# Install once with:  pip install pre-commit && pre-commit install
+# Every commit is then scanned for secrets and linted before it is created.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+  - repo: local
+    hooks:
+      - id: scan-secrets
+        name: scan for secrets, identifiers, paths and URLs
+        entry: python tools/scan_secrets.py
+        language: system
+        pass_filenames: false
+      - id: ruff
+        name: ruff
+        entry: ruff check .
+        language: system
+        pass_filenames: false

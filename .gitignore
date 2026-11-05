@@ -1,0 +1,25 @@
+# Secrets and machine-specific settings: never commit
+.env
+*.env
+!.env.example
+
+# Data, caches, state and kill-switch files written at run time
+/data/
+/cache/
+/state/
+/control/
+/logs/
+*.parquet
+*.part
+*.lock
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
