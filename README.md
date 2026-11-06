@@ -34,8 +34,12 @@ algo_builder/        the importable package
   strategies/           the core logic of each case study, by chapter
   engine/               one engine, three modes: intents, the decision step, backtest and live drivers
   data/                 synthetic data generators and a replay feed
+  lab/                  design exercises and post-mortem checks (Chapters 24 and 25)
+  live/                 paper gates and backtest-versus-live reconciliation
 adapters/               template for writing your own broker adapter
-chapters/chNN/run.py    one runnable script per chapter
+chapters/chNN/run.py    one runnable script per chapter; most take seconds, but the
+                        option chapters (14 to 16) simulate many sessions and can take
+                        a few minutes
 tests/                  pytest suite
 tools/                  check_listings.py (book vs code), scan_secrets.py
 ```
