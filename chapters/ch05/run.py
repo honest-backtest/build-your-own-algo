@@ -12,14 +12,14 @@ Four small demonstrations on constructed and synthetic data:
 """
 from __future__ import annotations
 
-from datetime import date, time
+from datetime import time
 
 import numpy as np
 import pandas as pd
 
 from algo_builder.backtest.event_engine import Position, run_day
 from algo_builder.backtest.sizing import SizingError, check_sane, lots_for_risk
-from algo_builder.infra.cost_model import FUTURES, OPTIONS, rates_on, round_trip_cost
+from algo_builder.infra.cost_model import FUTURES, OPTIONS, round_trip_cost
 
 
 def bars(rows):
@@ -51,9 +51,8 @@ def gap_through_stop() -> None:
 def costs() -> None:
     print(f"   one lot of futures (50 x 25,000), round trip: Rs {round_trip_cost(1_250_000, 1_250_000, FUTURES):,.0f}")
     print(f"   one lot of an ATM option at 150, round trip:   Rs {round_trip_cost(7_500, 7_500, OPTIONS):,.0f}")
-    for d in (date(2024, 6, 3), date(2025, 6, 2), date(2026, 6, 1)):
-        c = round_trip_cost(1_250_000, 1_250_000, rates_on("FUTURES", d))
-        print(f"   the same futures round trip on {d:%d %b %Y}: Rs {c:,.0f} = {c / 50:.1f} points")
+    c = round_trip_cost(1_250_000, 1_250_000, FUTURES)
+    print(f"   the same futures round trip in index points: {c / 50:.1f}")
 
 
 def runaway_sizing() -> None:

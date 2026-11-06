@@ -1,5 +1,3 @@
-from datetime import date
-
 import numpy as np
 import pandas as pd
 
@@ -7,15 +5,14 @@ from algo_builder.robustness.gross_net import cost_or_signal, friction_sweep_poi
 from algo_builder.strategies.rsi_macd_futures import Pos, check_exit, stitch_continuous
 
 
-def test_round_trip_points_by_date():
-    pts_2026 = round_trip_points(25_000, 50, date(2026, 6, 1), slippage_pts=1.0)
-    pts_2024 = round_trip_points(25_000, 50, date(2024, 6, 3), slippage_pts=1.0)
-    assert 16.5 < pts_2026 < 17.5 and pts_2024 < 8          # about 17 points today
+def test_round_trip_points_at_current_rates():
+    pts = round_trip_points(25_000, 50, slippage_pts=1.0)
+    assert 16.5 < pts < 17.5                                 # about 17 points
 
 
 def test_points_do_not_depend_on_the_lot_size():
-    a = round_trip_points(25_000, 50, date(2026, 6, 1), slippage_pts=0)
-    b = round_trip_points(25_000, 75, date(2026, 6, 1), slippage_pts=0)
+    a = round_trip_points(25_000, 50, slippage_pts=0)
+    b = round_trip_points(25_000, 75, slippage_pts=0)
     assert abs(a - b) < 0.5                                  # only the flat brokerage (and its GST) differs
 
 

@@ -16,8 +16,7 @@ up current values from your exchange/broker before relying on any result.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
-from datetime import date
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -32,30 +31,18 @@ class CostRates:
     gst_pct: float                # on brokerage + exchange + regulator
 
 
-# Profiles at 2026 statutory rates (rounded); brokerage is ILLUSTRATIVE (a percentage
-# with a flat cap per order). OPTIONS brokerage_pct is set so high that the flat cap
-# always applies. Check current rates before relying on any result.
+# Profiles at statutory rates in force from 1 April 2026 (rounded); brokerage is
+# ILLUSTRATIVE (a percentage with a flat cap per order). OPTIONS brokerage_pct is set
+# so high that the flat cap always applies. Every trade, old or new, is costed at these
+# rates: STT has only risen, so older trades are charged conservatively. Check current
+# rates before relying on any result.
 EQ_INTRADAY = CostRates(0.0003, 20, 0.0, 0.00025, 0.0000307, 0.000001, 0.00003, 0.18)
 EQ_DELIVERY = CostRates(0.0, 0, 0.001, 0.001, 0.0000307, 0.000001, 0.00015, 0.18)
 FUTURES = CostRates(0.0003, 20, 0.0, 0.0005, 0.0000183, 0.000001, 0.00002, 0.18)
 OPTIONS = CostRates(1.0, 20, 0.0, 0.0015, 0.000355, 0.000001, 0.00003, 0.18)   # % of PREMIUM
 
-# Sell-side STT on F&O changed twice; a backtest must charge the rate of its own day.
-STT_SELL_HISTORY = {
-    "FUTURES": [(date(2024, 10, 1), 0.000125), (date(2026, 4, 1), 0.0002), (date.max, 0.0005)],
-    "OPTIONS": [(date(2024, 10, 1), 0.000625), (date(2026, 4, 1), 0.001), (date.max, 0.0015)],
-}
 PROFILES = {"EQ_INTRADAY": EQ_INTRADAY, "EQ_DELIVERY": EQ_DELIVERY,
             "FUTURES": FUTURES, "OPTIONS": OPTIONS}
-
-
-def rates_on(profile: str, day: date) -> CostRates:
-    """The profile with the sell-side STT in force on `day` (before each change date)."""
-    base = PROFILES[profile]
-    for until, rate in STT_SELL_HISTORY.get(profile, []):
-        if day < until:
-            return replace(base, stt_sell_pct=rate)
-    return base
 
 
 def leg_cost(turnover: float, side: str, r: CostRates) -> float:

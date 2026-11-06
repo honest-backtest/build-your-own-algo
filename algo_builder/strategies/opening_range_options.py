@@ -12,13 +12,13 @@ combinations, not one setting. Modelled premiums are a proxy; verify on real pri
 """
 from __future__ import annotations
 
-from datetime import date, datetime, time as dtime, timedelta
+from datetime import datetime, time as dtime, timedelta
 from math import erf, exp, log, sqrt
 
 import numpy as np
 import pandas as pd
 
-from algo_builder.infra.cost_model import rates_on, round_trip_cost
+from algo_builder.infra.cost_model import OPTIONS, round_trip_cost
 from algo_builder.robustness.gross_net import round_trip_points
 
 PARAMS = dict(                     # ILLUSTRATIVE
@@ -84,11 +84,11 @@ def years_to_expiry(now: datetime, expiry: datetime, basis: str = "trading",
 
 
 def option_trade(direction: int, S_entry: float, S_exit: float, t_entry_yrs: float,
-                 t_exit_yrs: float, rv: float, day: date, p=PARAMS, qty: int = 1,
+                 t_exit_yrs: float, rv: float, p=PARAMS, qty: int = 1,
                  exit_vol_mult: float | None = None) -> dict:
     """Long ATM call for a long signal, ATM put for a short signal, priced by the
     model. Theta comes from the shorter T at exit; half the spread is paid on each
-    side; charges are levied on the premium, at the rates in force on `day`.
+    side; charges are levied on the premium, at current rates.
     `exit_vol_mult` stresses a change of volatility while the trade is open."""
     K = round(S_entry / p["strike_step"]) * p["strike_step"]
     is_call = direction > 0
@@ -96,7 +96,7 @@ def option_trade(direction: int, S_entry: float, S_exit: float, t_entry_yrs: flo
     sig_out = rv * (exit_vol_mult if exit_vol_mult is not None else p["vol_mult"])
     buy = bs_price(S_entry, K, t_entry_yrs, sig_in, is_call) + p["spread_pts"] / 2
     sell = max(bs_price(S_exit, K, t_exit_yrs, sig_out, is_call) - p["spread_pts"] / 2, 0.0)
-    charges = round_trip_cost(buy * qty, sell * qty, rates_on("OPTIONS", day)) / qty
+    charges = round_trip_cost(buy * qty, sell * qty, OPTIONS) / qty
     return dict(strike=K, opt="CE" if is_call else "PE", buy=buy, sell=sell,
                 pts=sell - buy - charges, charges_pts=charges)
 
@@ -122,12 +122,12 @@ def two_vehicles(trades: list, lot_size: int, expiry_for, rv_for, p=PARAMS,
     rows = []
     for t in trades:
         day = t.entry_ts.date()
-        fut_pts = t.direction * (t.exit - t.entry) - round_trip_points(t.entry, lot_size, day)
+        fut_pts = t.direction * (t.exit - t.entry) - round_trip_points(t.entry, lot_size)
         exp_dt = expiry_for(t.entry_ts)
         opt = option_trade(t.direction, t.entry, t.exit,
                            years_to_expiry(t.entry_ts.to_pydatetime(), exp_dt, basis),
                            years_to_expiry(t.exit_ts.to_pydatetime(), exp_dt, basis),
-                           rv_for(day), day, p, qty=lot_size * option_lots, exit_vol_mult=exit_vol_mult)
+                           rv_for(day), p, qty=lot_size * option_lots, exit_vol_mult=exit_vol_mult)
         rows.append(dict(entry_ts=t.entry_ts, exit_ts=t.exit_ts, direction=t.direction,
                          index_pts=t.direction * (t.exit - t.entry),
                          futures=fut_pts * lot_size, options=opt["pts"] * lot_size * option_lots,

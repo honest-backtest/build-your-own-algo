@@ -3,12 +3,11 @@ from datetime import time
 import pandas as pd
 
 from algo_builder.backtest.event_engine import Position, run_day
-from datetime import date
 
 import pytest
 
 from algo_builder.backtest.sizing import SizingError, check_sane, lots_for_risk
-from algo_builder.infra.cost_model import (EQ_INTRADAY, FUTURES, OPTIONS, leg_cost, rates_on,
+from algo_builder.infra.cost_model import (EQ_INTRADAY, FUTURES, OPTIONS, leg_cost,
                                          round_trip_cost)
 
 
@@ -91,12 +90,6 @@ def test_cost_profiles_reproduce_the_2026_round_trips():
     opt = round_trip_cost(7_500, 7_500, OPTIONS)              # 50 x 150 premium
     assert 740 < fut < 770 and 60 < opt < 70
 
-
-def test_stt_history_is_applied_by_date():
-    assert rates_on("FUTURES", date(2024, 6, 3)).stt_sell_pct == 0.000125
-    assert rates_on("FUTURES", date(2025, 6, 2)).stt_sell_pct == 0.0002
-    assert rates_on("FUTURES", date(2026, 6, 1)).stt_sell_pct == 0.0005
-    assert rates_on("EQ_DELIVERY", date(2020, 1, 1)).stt_sell_pct == 0.001
 
 
 def test_sizing_is_capped_and_impossible_states_fail_loudly():

@@ -8,20 +8,19 @@ a friction sweep in points, and a one-line diagnosis.
 """
 from __future__ import annotations
 
-from datetime import date
 
 import numpy as np
 import pandas as pd
 
-from algo_builder.infra.cost_model import rates_on, round_trip_cost
+from algo_builder.infra.cost_model import PROFILES, round_trip_cost
 
 
-def round_trip_points(level: float, lot_size: int, day: date, profile: str = "FUTURES",
+def round_trip_points(level: float, lot_size: int, profile: str = "FUTURES",
                       slippage_pts: float = 1.0) -> float:
-    """Charges for one lot bought and sold at `level`, at the rates in force on `day`,
-    in index points, plus `slippage_pts` on each side."""
+    """Charges for one lot bought and sold at `level`, at current rates, in index
+    points, plus `slippage_pts` on each side."""
     value = level * lot_size
-    charges = round_trip_cost(value, value, rates_on(profile, day))
+    charges = round_trip_cost(value, value, PROFILES[profile])
     return charges / lot_size + 2 * slippage_pts
 
 

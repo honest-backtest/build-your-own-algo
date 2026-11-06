@@ -10,7 +10,6 @@ and the author's percentage-return sweep on the same trades.
 """
 from __future__ import annotations
 
-from datetime import date
 
 import numpy as np
 import pandas as pd
@@ -31,12 +30,9 @@ def main() -> None:
     print("Friction sweep, flat round-trip cost in index points:")
     print(friction_sweep_points(gross).round(2).to_string(index=False))
 
-    then = round_trip_points(24_000, 75, date(2025, 6, 2))      # ILLUSTRATIVE level and lot
-    now = round_trip_points(25_000, 50, date(2026, 6, 1))
-    print(f"\nRound trip incl. 1 point slippage each side: {then:.1f} points (mid-2025 rates), "
-          f"{now:.1f} points (2026 rates)")
-    print("Diagnosis at 2025 cost:", cost_or_signal(gross, then))
-    print("Diagnosis at 2026 cost:", cost_or_signal(gross, now))
+    now = round_trip_points(25_000, 50)                         # ILLUSTRATIVE level and lot
+    print(f"\nRound trip incl. 1 point slippage each side: {now:.1f} points (current rates)")
+    print("Diagnosis at current cost:", cost_or_signal(gross, now))
 
     pct = pd.DataFrame({"gross_ret": gross / 24_000})           # the same trades as returns
     print(f"\nPercentage sweep (author's tool): break-even {break_even_bps(pct):.2f} bps per side")

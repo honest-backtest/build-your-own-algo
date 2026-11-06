@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -18,12 +18,11 @@ def test_trading_time_skips_nights_and_weekends():
     assert np.isclose(one_session, 1 / 252)
 
 
-def test_option_charges_are_on_premium_and_dated():
+def test_option_charges_are_on_premium():
     kw = dict(direction=1, S_entry=25_000, S_exit=25_000, t_entry_yrs=2 / 252, t_exit_yrs=2 / 252,
               rv=0.15, qty=75)
-    old = option_trade(**kw, day=date(2024, 6, 3))
-    new = option_trade(**kw, day=date(2026, 6, 3))
-    assert 0 < old["charges_pts"] < new["charges_pts"] < 5          # points per unit, on premium
+    new = option_trade(**kw)
+    assert 0 < new["charges_pts"] < 5                               # points per unit, on premium
     assert np.isclose(new["pts"], new["sell"] - new["buy"] - new["charges_pts"])
     assert new["buy"] - new["sell"] == PARAMS["spread_pts"]          # same price, same vol: only the spread
 
